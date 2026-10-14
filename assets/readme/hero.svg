@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+  <title id="title">BongoCat Together</title>
+  <desc id="desc">Two illustrated desktop cats linked by an invitation. A concept illustration of two independent companions, not an application screenshot.</desc>
+  <rect width="1200" height="440" rx="28" fill="#fff8ed"/>
+  <g id="project-title" text-anchor="middle" font-family="Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif" fill="#292c36">
+    <text x="600" y="112" font-size="76" font-weight="700" letter-spacing="-2">BongoCat Together</text>
+  </g>
+  <g id="invitation-link" fill="none" stroke="#558a76" stroke-width="5" stroke-linecap="round">
+    <path d="M430 289 H536 M664 289 H770" stroke-dasharray="9 13"/>
+    <rect x="558" y="256" width="84" height="65" rx="12"/>
+    <path d="m560 264 40 30 40-30"/>
+  </g>
+  <g id="local-cat" fill="#fffefa" stroke="#292c36" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M197 322 C181 280 195 246 219 226 L220 178 L271 206 Q307 194 344 209 L389 181 L390 236 Q423 272 410 322 Z"/>
+    <path d="M242 251 v13 M363 251 v13 M295 269 q12 16 24 0" fill="none"/>
+    <path d="M203 308 q23-30 53 0 M355 308 q28-30 52 0"/>
+    <path d="M221 325 h168 l22 37 H200 Z" fill="#e4eee5"/>
+    <path d="M237 339 h20 M276 339 h20 M315 339 h20 M354 339 h20 M251 352 h100" stroke="#558a76" stroke-width="4"/>
+    <path d="M230 276 h14 M366 276 h14" stroke="#c77c6e" stroke-width="7"/>
+  </g>
+  <g id="friend-cat" fill="#fffefa" stroke="#292c36" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M787 322 C771 280 785 246 809 226 L810 178 L861 206 Q897 194 934 209 L979 181 L980 236 Q1013 272 1000 322 Z"/>
+    <path d="M832 257 q6-10 12 0 M947 257 q6-10 12 0 M885 269 q12 16 24 0" fill="none"/>
+    <path d="M793 308 q23-30 53 0 M945 308 q28-30 52 0"/>
+    <path d="M811 325 h168 l22 37 H790 Z" fill="#f3e1d9"/>
+    <path d="M827 339 h20 M866 339 h20 M905 339 h20 M944 339 h20 M841 352 h100" stroke="#c77c6e" stroke-width="4"/>
+    <path d="M820 276 h14 M956 276 h14" stroke="#c77c6e" stroke-width="7"/>
+  </g>
+</svg>

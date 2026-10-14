@@ -343,6 +343,8 @@ impl SettingsView {
             .detach();
         }
         Self {
+            together: None,
+            together_subscription: None,
             #[cfg(target_os = "windows")]
             window_background_color,
             #[cfg(target_os = "windows")]

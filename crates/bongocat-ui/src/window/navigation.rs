@@ -19,6 +19,7 @@ pub(super) enum SettingsNavigationPage {
     InputInteraction,
     Shortcuts,
     AppSystem,
+    Together,
     About,
 }
 
@@ -77,11 +78,12 @@ impl SettingsNavigationPage {
             Self::InputInteraction => 4,
             Self::Shortcuts => 5,
             Self::AppSystem => 6,
-            Self::About => 7,
+            Self::Together => 7,
+            Self::About => 8,
         }
     }
 
-    pub(super) const ALL: [Self; 8] = [
+    pub(super) const ALL: [Self; 9] = [
         Self::Appearance,
         Self::ModelLibrary,
         Self::ModelBehavior,
@@ -89,6 +91,7 @@ impl SettingsNavigationPage {
         Self::InputInteraction,
         Self::Shortcuts,
         Self::AppSystem,
+        Self::Together,
         Self::About,
     ];
 
@@ -101,6 +104,7 @@ impl SettingsNavigationPage {
             Self::InputInteraction => "navigation.input_interaction.title",
             Self::Shortcuts => "navigation.shortcuts.title",
             Self::AppSystem => "navigation.app_system.title",
+            Self::Together => "navigation.together.title",
             Self::About => "navigation.about.title",
         }
     }
@@ -118,6 +122,7 @@ impl SettingsNavigationPage {
             Self::InputInteraction => IconName::MousePointer2,
             Self::Shortcuts => IconName::Keyboard,
             Self::AppSystem => IconName::Cog,
+            Self::Together => IconName::Cat,
             Self::About => IconName::Info,
         }
     }
@@ -163,6 +168,7 @@ impl SettingsNavigationPage {
             Self::ModelWindow => &["Overlay"],
             Self::InputInteraction => &["Interaction", "Input", "交互", "输入"],
             Self::Shortcuts => &[],
+            Self::Together => &["P2P", "Together", "联机"],
             Self::AppSystem => &[
                 "Application",
                 "应用",
@@ -227,6 +233,7 @@ mod tests {
                 SettingsNavigationPage::InputInteraction,
                 SettingsNavigationPage::Shortcuts,
                 SettingsNavigationPage::AppSystem,
+                SettingsNavigationPage::Together,
                 SettingsNavigationPage::About,
             ]
         );

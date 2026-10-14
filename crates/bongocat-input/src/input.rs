@@ -525,10 +525,18 @@ pub trait InputSubmitter: Send + Sync {
     fn submit(&self, event: SequencedInputEvent) -> Result<(), InputSubmitError>;
 }
 
-#[derive(Debug, Default)]
+/// Optional bounded observation after the local runtime accepts an edge.
+pub trait InputObserver: Send + Sync {
+    fn on_input(&self, event: &InputEvent);
+    fn on_overflow(&self);
+    fn on_wheel(&self, _delta: i16) {}
+}
+
+#[derive(Default)]
 struct InputProducerState {
     next_sequence: u64,
     recovery_pending: bool,
+    observer: Option<std::sync::Arc<dyn InputObserver>>,
 }
 
 #[derive(Clone)]
@@ -547,6 +555,26 @@ pub enum InputPublishError {
 }
 
 impl InputProducer {
+    /// The observer must never wait for network, UI or disk work. All clones
+    /// share this attachment and the same ordered observation boundary.
+    pub fn set_observer(&self, observer: Option<std::sync::Arc<dyn InputObserver>>) {
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .observer = observer;
+    }
+
+    pub fn observe_wheel(&self, delta: i16) {
+        if let Some(observer) = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .observer
+            .as_ref()
+        {
+            observer.on_wheel(delta);
+        }
+    }
     pub fn new(submitter: std::sync::Arc<dyn InputSubmitter>) -> Self {
         Self {
             submitter,
@@ -568,6 +596,9 @@ impl InputProducer {
         };
         match self.submitter.submit(envelope) {
             Ok(()) => {
+                if let Some(observer) = state.observer.as_ref() {
+                    observer.on_input(&event);
+                }
                 self.transport.enqueued();
                 if state.recovery_pending {
                     state.recovery_pending = false;
@@ -576,6 +607,9 @@ impl InputProducer {
                 Ok(input_sequence)
             }
             Err(InputSubmitError::QueueFull) => {
+                if let Some(observer) = state.observer.as_ref() {
+                    observer.on_overflow();
+                }
                 state.recovery_pending = true;
                 self.transport.queue_full();
                 Err(InputPublishError::QueueFull(event))

@@ -1,154 +1,104 @@
-![BongoCat](https://socialify.git.ci/ayangweb/BongoCat/image?font=JetBrains+Mono&forks=1&issues=1&language=1&logo=https%3A%2F%2Fi0.hdslb.com%2Fbfs%2Fopenplatform%2F8b37066049da62a8e6d105363472ef72fe2e435b.png&name=1&owner=1&pattern=Brick+Wall&pulls=1&stargazers=1&theme=Auto)
+<p align="center">
+  <img src="assets/readme/hero.svg" width="100%" alt="BongoCat Together — two desktop cats connected by an invitation. Concept illustration, not an application screenshot.">
+</p>
 
-<div align="center">
+# BongoCat Together
 
-English | [简体中文](README.zh-CN.md)
+**Two cats on your desktop. One invitation to bring a friend along.**
 
-</div>
+English · [简体中文](README.zh-CN.md) · [Usage guide](docs/bongocat-together-usage.md)
 
-<div align="center">
-  <div>
-    <a href="https://github.com/ayangweb/BongoCat/releases"><img alt="Windows" src="https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB0PSIxNzI2MzA1OTcxMDA2IiBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjE1NDgiIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4Ij48cGF0aCBkPSJNNTI3LjI3NTU1MTYxIDk2Ljk3MTAzMDEzdjM3My45OTIxMDY2N2g0OTQuNTEzNjE5NzVWMTUuMDI2NzU3NTN6TTUyNy4yNzU1NTE2MSA5MjguMzIzNTA4MTVsNDk0LjUxMzYxOTc1IDgwLjUyMDI4MDQ5di00NTUuNjc3NDcxNjFoLTQ5NC41MTM2MTk3NXpNNC42NzA0NTEzNiA0NzAuODMzNjgyOTdINDIyLjY3Njg1OTI1VjExMC41NjM2ODE5N2wtNDE4LjAwNjQwNzg5IDY5LjI1Nzc5NzUzek00LjY3MDQ1MTM2IDg0Ni43Njc1OTcwM0w0MjIuNjc2ODU5MjUgOTE0Ljg2MDMxMDEzVjU1My4xNjYzMTcwM0g0LjY3MDQ1MTM2eiIgcC1pZD0iMTU0OSIgZmlsbD0iI2ZmZmZmZiI+PC9wYXRoPjwvc3ZnPg==" /></a>
-    <a href="https://github.com/ayangweb/BongoCat/releases"><img alt="macOS" src="https://img.shields.io/badge/-macOS-black?style=flat-square&logo=apple&logoColor=white" /></a>
-  </div>
+A Windows development version of [BongoCat](https://github.com/ayangweb/BongoCat),
+with optional encrypted two-person rooms. Keep your own cat and show a friend's
+cat beside it; choose whether to share keyboard activity, mouse actions, or text
+typed into a dedicated field.
 
-  <p>
-    <a href="./LICENSE"><img src="https://img.shields.io/github/license/ayangweb/BongoCat?style=flat-square" /></a>
-    <a href="https://github.com/ayangweb/BongoCat/releases/latest"><img src="https://img.shields.io/github/v/release/ayangweb/BongoCat?label=release&sort=semver&style=flat-square" /></a>
-    <a href="https://github.com/ayangweb/BongoCat/releases"><img src="https://img.shields.io/github/downloads/ayangweb/BongoCat/total?style=flat-square" /></a>
-  </p>
+**Development build · Windows x64 · No installer or Release published for Together.**
 
-  <p>
-    <a href="https://trendshift.io/developers/8507" target="_blank"><img src="https://trendshift.io/api/badge/developers/8507" alt="ayangweb | Trendshift" width="250" height="55" /></a>
-    <a href="https://trendshift.io/repositories/14605" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14605" alt="ayangweb%2FBongoCat | Trendshift" width="250" height="55" /></a>
-    <a href="https://hellogithub.com/repository/7d23863fd4be47b39e816193ded385c9" target="_blank">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=7d23863fd4be47b39e816193ded385c9&claim_uid=5ihRVIuTYBmSGtQ&theme=dark" />
-        <source media="(prefers-color-scheme: light)" srcset="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=7d23863fd4be47b39e816193ded385c9&claim_uid=5ihRVIuTYBmSGtQ&theme=neutral" />
-        <img alt="HelloGitHub" src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=7d23863fd4be47b39e816193ded385c9&claim_uid=5ihRVIuTYBmSGtQ&theme=neutral" width="250" height="55" />
-      </picture>
-    </a>
-  </p>
-</div>
+## One invitation, two independent cats
 
-<table width="100%">
-  <thead>
-    <tr>
-      <th width="50%" align="center">macOS</th>
-      <th width="50%" align="center">Windows</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td width="50%" align="center"><img src="https://i0.hdslb.com/bfs/openplatform/56f72568579bb44284382fe1f9b9049a700282d3.png" alt="macOS" width="100%" /></td>
-      <td width="50%" align="center"><img src="https://i0.hdslb.com/bfs/openplatform/65129576aa3062f840d0640c060298c1d52b9be2.png" alt="Windows" width="100%" /></td>
-    </tr>
-  </tbody>
-</table>
+1. **Create a room** and send its invitation privately to one friend.
+2. **Join the room** to display a second cat with its own model, size and position.
+3. **Choose what to share.** Every sharing control starts off, and a visible indicator lets you stop sharing.
 
-BongoCat is a desktop companion for Windows and macOS. A Live2D cat lives on your screen, its eyes
-and paws follow your mouse, and it reacts to every key, mouse button and gamepad button you press.
-Bring your own models, move the window wherever you like, and it stays out of your way until you
-want it again.
+No account or self-hosted server is needed. Connections use encrypted QUIC through
+Iroh; public discovery and relay services may help peers connect. Direct-only
+mode disables relays and requires a reachable UDP path. The local cat works offline.
 
-Inspired by [Bongo-Cat-Mver](https://github.com/MMmmmoko/Bongo-Cat-Mver) by
-[MMmmmoko](https://github.com/MMmmmoko).
+| What you can share | What the friend receives |
+| --- | --- |
+| Abstract keyboard activity | An activity signal without specific key codes |
+| Precise keys | Physical key presses, releases and combinations |
+| Mouse actions | Normalized movement, buttons and wheel direction |
+| Dedicated-field text | Only text you type into the sharing field; no other app text or clipboard |
 
-## Features
+Remote input animates the friend cat; it does not control the other computer.
+Text bubbles expire, and shared keys and text are not stored in a history or logs.
+Precise key sequences can reveal what you type: enable them deliberately, optionally
+limit them to selected foreground applications, and use the stop button when finished.
 
-- Runs on macOS and Windows.
-- Matches the right motion to every key, mouse button or gamepad button you press.
-- Bring your own Live2D models and make the cat your own.
-- Fully open source, public code, and no collection of user data.
-- Works offline with no network access, so your privacy is protected.
+## Try it from source
 
-## More models
+Use **Windows 10 1903+ x64**, Rust with the **MSVC** toolchain, Visual Studio C++
+Build Tools with a Windows SDK, and [just](https://github.com/casey/just).
+Keep the checked-out model and vendor resources with the workspace.
 
-You can browse and download more cat models, or share your own, in
-[Awesome-BongoCat](https://github.com/ayangweb/Awesome-BongoCat).
+```powershell
+git clone https://github.com/heyhex/BongoCat-Together.git
+cd BongoCat-Together
+$env:RUSTUP_TOOLCHAIN='1.97.1-x86_64-pc-windows-msvc'
+just dev
+```
 
-## Community
+This repository is private; cloning requires access to it. Both peers run their
+own source checkout. Open settings from the tray, select **Together**, create or
+join a room, then enable the sharing you want. Invitations expire for first join
+after ten minutes. Sharing returns to off after reconnection.
 
-<table>
-  <thead>
-    <tr>
-      <th>QQ Group 1</th>
-      <th>QQ Group 2</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <a href="https://qm.qq.com/q/AS3gNv2Vzy">
-          <picture>
-            <source
-              media="(prefers-color-scheme: dark)"
-              srcset="https://i0.hdslb.com/bfs/openplatform/8ecdc4982ab01b59d7731fcca3ec26631a274560.png"
-            />
-            <source
-              media="(prefers-color-scheme: light)"
-              srcset="https://i0.hdslb.com/bfs/openplatform/09f56580397063e1819c4c2ed63d07dee12720e1.png"
-            />
-            <img
-              alt="QQ Group 1"
-              src="https://i0.hdslb.com/bfs/openplatform/09f56580397063e1819c4c2ed63d07dee12720e1.png"
-              height="250"
-            />
-          </picture>
-        </a>
-      </td>
-      <td>
-        <a href="https://qm.qq.com/q/TmltLAod2O">
-          <picture>
-            <source
-              media="(prefers-color-scheme: dark)"
-              srcset="https://i0.hdslb.com/bfs/openplatform/473c522487ff33e0f32b15466aeb0734f17161c8.png"
-            />
-            <source
-              media="(prefers-color-scheme: light)"
-              srcset="https://i0.hdslb.com/bfs/openplatform/d5ae8c5af6ae1d0a1f066705ee822d1287384cf6.png"
-            />
-            <img
-              alt="QQ Group 2"
-              src="https://i0.hdslb.com/bfs/openplatform/d5ae8c5af6ae1d0a1f066705ee822d1287384cf6.png"
-              height="250"
-            />
-          </picture>
-        </a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+Development data is separate from an installed production BongoCat. A locally
+built executable depends on workspace resources; it is not a standalone portable package.
+See the [full guide](docs/bongocat-together-usage.md) for connection, model and sharing controls.
 
-## Support
+## Make room for your friend's cat
 
-Every bit of recognition is appreciated. Donations are welcome, but never expected — thank you for
-loving the cat ❤️
+Choose a local model, adjust its scale, hide it, swap cat positions or reset the
+layout. Available built-in models can match automatically. Custom models must be
+imported locally on each computer; model files are not transferred over the connection.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://i0.hdslb.com/bfs/openplatform/e7438bff14cdfb6bfd0feacbb482f99ea4093294.png" />
-  <source media="(prefers-color-scheme: light)" srcset="https://i0.hdslb.com/bfs/openplatform/da55cc3ec1556580c91e59f589792866c998c7c6.png" />
-  <img alt="WeChat donation code" src="https://i0.hdslb.com/bfs/openplatform/da55cc3ec1556580c91e59f589792866c998c7c6.png" height="250" />
-</picture>
+Browse community models at [Awesome-BongoCat](https://github.com/ayangweb/Awesome-BongoCat)
+and respect each model's license. Wheel direction appears in the bubble; dedicated
+wheel or double-click animations depend on the model.
 
-## Contributing
+## What has been checked
 
-Contributions are very welcome. Please read the [contributing guide](CONTRIBUTING.md).
+Windows automated checks cover real local QUIC connections, permission revocation,
+independent cat runtimes, model switching and failure recovery, text bubbles,
+disconnect cleanup, and the Together settings layout at 800 × 600 and 1000 × 600.
 
-<a href="https://openomy.com/ayangweb/BongoCat" target="_blank" style="display: block; width: 100%;" align="center">
-  <img src="https://openomy.com/svg?repo=ayangweb/BongoCat&chart=bubble" alt="Contribution Leaderboard" style="display: block; width: 100%;" />
-</a>
+```powershell
+just check
+just together-smoke
+just dev-smoke
+```
 
-## Star history
+**Still awaiting real-world acceptance:** two computers on different public networks,
+relay and network changes, Chinese IME composition, physical input and lock/sleep/UAC,
+125/150/200% DPI and multiple displays, and an eight-hour stability run.
 
-<a href="https://www.star-history.com/#ayangweb/BongoCat&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ayangweb/BongoCat&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ayangweb/BongoCat&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ayangweb/BongoCat&type=Date" />
- </picture>
-</a>
+Friend display preferences and application allowlists currently last only until
+the app exits. Bubble styling follows the app theme. Together is not implemented
+on macOS; some other-language Together labels currently use English. Signed
+installation, upgrade/uninstall testing and redistribution checks remain pending.
 
-## License
+## Credits and license
 
-BongoCat is open source under the [Apache License 2.0](LICENSE) license.
+Based on [ayangweb/BongoCat](https://github.com/ayangweb/BongoCat), with inspiration
+from [MMmmmoko/Bongo-Cat-Mver](https://github.com/MMmmmoko/Bongo-Cat-Mver).
+Upstream history and license notices are retained. Upstream releases do not contain
+this Together development work.
+
+Application code uses [Apache License 2.0](LICENSE). Live2D Cubism Core and model
+assets retain their own terms; see the bundled [Cubism license](vendor/cubism/5-r.5/LICENSE.md)
+and [notices](vendor/cubism/5-r.5/NOTICE.md).
+
+For changes, read the [contributing guide](CONTRIBUTING.md).

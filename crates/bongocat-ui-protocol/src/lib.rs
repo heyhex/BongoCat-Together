@@ -14,7 +14,9 @@
 //! drift from the usage the runtime matches it against.
 
 mod settings;
+mod together_layout;
 mod update;
+pub use together_layout::*;
 
 pub use settings::*;
 pub use update::*;

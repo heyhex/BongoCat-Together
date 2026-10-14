@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### ✨ Features
+
+- Added optional Windows Together rooms with encrypted two-peer connections, an independent friend cat, model selection, scaling and layout controls.
+- Added separately enabled abstract animation, precise keys, mouse and dedicated-field text sharing. Sharing defaults to off; reconnecting requires enabling it again.
+- Added a persistent sharing indicator with a stop button, executable allowlists, current key labels and temporary friend text bubbles.
+
+### 🎨 Interface
+
+- Fixed clipped Together settings by using the standard setting groups and full-width rows for invitations, key labels and text. Action buttons wrap within the page.
+
+### ⚠️ Upgrade Notice
+
+- Together can use n0 public discovery and relay services. Local cat interaction remains available offline. Together display choices currently last for one application process; the existing configuration format is unchanged.
+- This feature is under development. Cross-network, IME, DPI and soak acceptance and installer distribution gates remain pending.
+
 ## 2.3.1 - 2026-10-13
 
 ### 🐛 Bug Fixes

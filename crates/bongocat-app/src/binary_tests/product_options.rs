@@ -8,6 +8,8 @@ fn run_options_default_to_an_unbounded_product_lifetime() {
     assert_eq!(
         options,
         RunOptions {
+            #[cfg(target_os = "windows")]
+            together_smoke: false,
             run_seconds: 0,
             #[cfg(target_os = "windows")]
             single_instance_ready_file: None,
@@ -94,6 +96,8 @@ fn only_the_bounded_run_duration_keeps_a_start_interactive() {
     assert!(!product.settings_window_smoke);
 
     let harness: BTreeSet<&str> = [
+        #[cfg(target_os = "windows")]
+        "--together-smoke",
         "--settings-window-smoke",
         "--settings-window-open-smoke",
         "--models-page-smoke",

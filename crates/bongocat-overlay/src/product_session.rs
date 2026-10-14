@@ -77,6 +77,39 @@ pub struct OverlayInteractionSinks {
 }
 
 impl ProductOverlaySession {
+    #[cfg(target_os = "windows")]
+    pub fn set_position(&mut self, x: i32, y: i32) -> Result<(), OverlayError> {
+        self.inner.set_position(x, y)
+    }
+
+    #[cfg(target_os = "windows")]
+    pub fn place_beside(&mut self, anchor: OverlayWindowBounds) -> Result<(), OverlayError> {
+        self.inner.place_beside(anchor)
+    }
+    /// A friend consumes only its independent runtime's snapshots. Registering
+    /// Raw Input here would redirect/duplicate the local cat's global capture.
+    #[cfg(target_os = "windows")]
+    pub fn start_remote(
+        runtime_client: RuntimeClient,
+        render_consumer: RenderConsumer,
+        options: OverlaySessionOptions,
+    ) -> Result<Self, OverlayError> {
+        windows::ProductOverlaySession::start_with_input_mode(
+            runtime_client.clone(),
+            runtime_client.input_producer(),
+            runtime_client.cursor_producer(),
+            runtime_client.gamepad_axis_producer(),
+            render_consumer,
+            options,
+            OverlayInteractionSinks {
+                context_menu_sender: None,
+                resize_sender: None,
+            },
+            false,
+        )
+        .map(|inner| Self { inner })
+    }
+
     pub fn start(
         runtime_client: RuntimeClient,
         input_producer: InputProducer,

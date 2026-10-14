@@ -31,9 +31,9 @@ pub use gamepad::{
 pub use input::{
     GLOBE_KEY_USAGE, GamepadAxis, GamepadAxisKey, GamepadButton, GamepadButtonKey,
     GamepadConnection, HandSide, InputBindings, InputControl, InputDiagnostics, InputEdge,
-    InputEvent, InputProducer, InputPublishError, InputResetReason, InputSource, InputSubmitError,
-    InputSubmitter, InputTransportDiagnostics, ModifierKey, MonotonicMillis, MouseButton,
-    PhysicalKey, PressedModifiers, SequencedInputEvent,
+    InputEvent, InputObserver, InputProducer, InputPublishError, InputResetReason, InputSource,
+    InputSubmitError, InputSubmitter, InputTransportDiagnostics, ModifierKey, MonotonicMillis,
+    MouseButton, PhysicalKey, PressedModifiers, SequencedInputEvent,
 };
 pub use platform_input::{
     PlatformInputDiagnostics, PlatformInputDiagnosticsProducer,

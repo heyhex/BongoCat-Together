@@ -267,6 +267,7 @@ struct SystemControl(i32);
 
 #[derive(Clone, Copy, Debug)]
 enum CapturedEvent {
+    Wheel(i16),
     Edge {
         control: InputControl,
         system: SystemControl,
@@ -286,6 +287,7 @@ struct RawKeyboardPacket {
 #[derive(Clone, Copy, Debug)]
 struct RawMousePacket {
     button_flags: u16,
+    wheel_delta: i16,
     /// Relative motion reported by the device, in device units.
     ///
     /// Non-zero only for a relative packet; an absolute device reports its
@@ -480,6 +482,9 @@ impl WindowState {
                         }
                     }
                 }
+                if packet.wheel_delta != 0 {
+                    self.enqueue(CapturedEvent::Wheel(packet.wheel_delta));
+                }
                 for (button, virtual_key, down, up) in [
                     (
                         MouseButton::Left,
@@ -628,6 +633,9 @@ impl WindowState {
 
     fn publish(&mut self, event: CapturedEvent) -> Result<(), InputPublishError> {
         match event {
+            CapturedEvent::Wheel(delta) => {
+                self.producer.observe_wheel(delta);
+            }
             CapturedEvent::Edge {
                 control,
                 system,
@@ -1355,6 +1363,15 @@ fn decode_raw_input_bytes(bytes: &[u8], header_size: usize) -> Result<Option<Raw
             );
             Ok(Some(RawInputPacket::Mouse(RawMousePacket {
                 button_flags,
+                wheel_delta: if button_flags & 0x0400 != 0 {
+                    i16::from_le_bytes(
+                        bytes[header_size + 6..header_size + 8]
+                            .try_into()
+                            .map_err(|_| ())?,
+                    )
+                } else {
+                    0
+                },
                 delta: CursorDelta {
                     x: f64::from(x),
                     y: f64::from(y),
@@ -1800,6 +1817,7 @@ mod tests {
         let mouse = |delta, absolute| {
             RawInputPacket::Mouse(RawMousePacket {
                 button_flags: 0,
+                wheel_delta: 0,
                 delta,
                 absolute,
             })

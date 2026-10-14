@@ -34,7 +34,11 @@ mod shortcuts;
 mod startup_permission;
 #[cfg(test)]
 mod tests;
+mod together_cat;
 mod update;
+pub use together_cat::TogetherCat;
+mod together_input;
+pub use together_input::{TogetherInputObserver, TogetherRemoteInput};
 
 pub use app_log::{
     ApplicationLogCode, ApplicationLogComponent, ApplicationLogContext, ApplicationLogDiagnostics,

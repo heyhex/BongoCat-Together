@@ -1646,6 +1646,35 @@ impl Render for SettingsView {
                 self.request_update.clone(),
             ));
 
+        let together_groups = if let Some(together) = self.together.clone() {
+            together.update(cx, |view, cx| {
+                view.language = language;
+                view.sync_models(
+                    snapshot
+                        .as_ref()
+                        .map_or(&[], |s| s.model_catalog.entries.as_slice()),
+                    window,
+                    cx,
+                );
+                view.groups(window, cx)
+            })
+        } else {
+            vec![
+                SettingGroup::new().item(SettingItem::render(move |_, _, _| {
+                    div().child(bongocat_i18n::text(
+                        language.catalog_locale(),
+                        "together.unavailable",
+                    ))
+                })),
+            ]
+        };
+        let together_page = SettingPage::new(SettingsNavigationPage::Together.title(language))
+            .icon(SettingsNavigationPage::Together.icon())
+            .title_suffix(page_reporter(
+                SettingsNavigationPage::Together,
+                navigation_memory.clone(),
+            ))
+            .groups(together_groups);
         let settings = Settings::new("bongocat-settings")
             .sidebar_width(px(220.0))
             .default_selected_index(SelectIndex {
@@ -1661,6 +1690,7 @@ impl Render for SettingsView {
                 input_interaction_page,
                 shortcuts_page,
                 app_system_page,
+                together_page,
                 about_page,
             ]);
         let model_drag_overlay = self.model_drag.map(|state| {

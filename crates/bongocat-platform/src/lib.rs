@@ -1,4 +1,12 @@
 use std::path::PathBuf;
+#[cfg(target_os = "windows")]
+mod foreground;
+#[cfg(target_os = "windows")]
+pub use foreground::foreground_executable_name;
+#[cfg(target_os = "windows")]
+mod companion_badge;
+#[cfg(target_os = "windows")]
+pub use companion_badge::CompanionBadgePositioner;
 
 pub use bongocat_input::{PlatformInputDiagnostics, PlatformInputServiceStatus};
 

@@ -136,6 +136,15 @@ pub(crate) fn ensure_settings_window(cx: &mut App) -> Result<SettingsWindowHandl
         )
     })?;
     cx.global_mut::<ProductCoordinator>().settings_window = Some(window_handle.clone());
+    // The optional service must never prevent offline settings/model startup.
+    let coordinator = cx.global_mut::<ProductCoordinator>();
+    let together = coordinator.together_service.as_ref().map(|s| s.client());
+    let together_layout = coordinator.together_layout.clone();
+    if let Some(client) = together {
+        let _ = window_handle.update(cx, |view, window, cx| {
+            view.attach_together(client, together_layout, window, cx)
+        });
+    }
     Ok(window_handle)
 }
 

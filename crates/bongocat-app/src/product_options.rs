@@ -29,6 +29,10 @@ pub(crate) const PROGRAM_NAME: &str = "bongocat-app";
                   --run-seconds value enables a bounded diagnostic run."
 )]
 pub(crate) struct RunOptions {
+    /// Exercise an encrypted loopback room and the independent friend overlay.
+    #[cfg(target_os = "windows")]
+    #[arg(long)]
+    pub(crate) together_smoke: bool,
     /// Run for this many seconds instead of until the product is quit.
     ///
     /// Zero is the default and means the same unbounded lifetime as passing nothing.
@@ -173,6 +177,10 @@ impl RunOptions {
     /// hangs on it: a harness is launched by a script on a machine where nobody can
     /// answer a native dialog.
     pub(crate) fn automated_verification(&self) -> bool {
+        #[cfg(target_os = "windows")]
+        if self.together_smoke {
+            return true;
+        }
         self.settings_window_smoke
             || self.settings_window_open_smoke
             || self.models_page_smoke

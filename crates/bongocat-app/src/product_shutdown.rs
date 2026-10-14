@@ -196,6 +196,8 @@ impl ProductShutdown {
             );
         }
         let settings_client = self.settings_service.client();
+        #[cfg(target_os = "windows")]
+        self.coordinator.together_overlay.borrow_mut().shutdown();
         if let Ok(bounds) = self.overlay.window_bounds() {
             for _ in 0..20 {
                 if settings_client
@@ -259,6 +261,12 @@ pub(crate) fn begin_product_shutdown(cx: &mut App) -> ProductShutdown {
     };
     // Registered hotkeys must stop consuming keys before any service that
     // would re-trigger them is torn down.
+    // Close peer transport and clear shared state before input/runtime teardown.
+    drop(coordinator.together_service.take());
+    #[cfg(target_os = "windows")]
+    if let Some(badge) = coordinator.together_badge.take() {
+        badge.close(cx);
+    }
     if let Some(shortcut_service) = coordinator.shortcut_service.take()
         && let Err(error) = shortcut_service.stop()
     {

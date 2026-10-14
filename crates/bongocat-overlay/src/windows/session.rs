@@ -236,6 +236,39 @@ impl HasWindowHandle for ProductOverlaySession {
 }
 
 impl ProductOverlaySession {
+    pub(crate) fn place_beside(&mut self, anchor: OverlayWindowBounds) -> Result<(), OverlayError> {
+        let current = self.overlay.window.bounds()?;
+        let screens = screen_bounds_all();
+        let right = OverlayWindowBounds {
+            x: anchor
+                .x
+                .saturating_add_unsigned(anchor.width.saturating_add(24)),
+            y: anchor.y,
+            ..current
+        };
+        let left = OverlayWindowBounds {
+            x: anchor
+                .x
+                .saturating_sub_unsigned(current.width.saturating_add(24)),
+            ..right
+        };
+        let placed = if bounds_inside_screens(&screens, right) {
+            right
+        } else if bounds_inside_screens(&screens, left) {
+            left
+        } else {
+            crate::placement::correction_for_screens(&screens, right).unwrap_or(right)
+        };
+        self.set_position(placed.x, placed.y)
+    }
+    pub(crate) fn set_position(&mut self, x: i32, y: i32) -> Result<(), OverlayError> {
+        let current = self.overlay.window.bounds()?;
+        let bounds = OverlayWindowBounds { x, y, ..current };
+        bounds.validate()?;
+        self.overlay.resize(bounds)?;
+        self.options.window_bounds = Some(bounds);
+        Ok(())
+    }
     pub(crate) fn start(
         runtime_client: RuntimeClient,
         input_producer: InputProducer,
@@ -244,6 +277,29 @@ impl ProductOverlaySession {
         render_consumer: RenderConsumer,
         options: OverlaySessionOptions,
         interaction_sinks: OverlayInteractionSinks,
+    ) -> Result<Self, OverlayError> {
+        Self::start_with_input_mode(
+            runtime_client,
+            input_producer,
+            cursor_producer,
+            gamepad_axis_producer,
+            render_consumer,
+            options,
+            interaction_sinks,
+            true,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn start_with_input_mode(
+        runtime_client: RuntimeClient,
+        input_producer: InputProducer,
+        cursor_producer: CursorProducer,
+        gamepad_axis_producer: GamepadAxisProducer,
+        render_consumer: RenderConsumer,
+        options: OverlaySessionOptions,
+        interaction_sinks: OverlayInteractionSinks,
+        capture_local_input: bool,
     ) -> Result<Self, OverlayError> {
         let OverlayInteractionSinks {
             context_menu_sender,
@@ -285,7 +341,7 @@ impl ProductOverlaySession {
             ModelCommitOutcome::Prepared,
         )?;
         let diagnostics_producer = runtime_client.platform_input_diagnostics_producer();
-        let (input_service, input_start_error) =
+        let (input_service, input_start_error) = if capture_local_input {
             crate::start_platform_input(&diagnostics_producer, || {
                 WindowsInputService::start_with_diagnostics(
                     input_producer,
@@ -293,7 +349,10 @@ impl ProductOverlaySession {
                     gamepad_axis_producer,
                     diagnostics_producer.clone(),
                 )
-            });
+            })
+        } else {
+            (None, None)
+        };
         Ok(Self {
             overlay,
             runtime_client,

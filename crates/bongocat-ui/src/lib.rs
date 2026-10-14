@@ -6,9 +6,13 @@
 
 use std::time::{Duration, Instant};
 
+#[cfg(target_os = "windows")]
+mod companion_badge;
 mod external_link;
 mod pop_confirm;
 mod window;
+#[cfg(target_os = "windows")]
+pub use companion_badge::{CompanionBadgeHandle, open_companion_badge};
 pub use window::{
     SettingsNavigationMemory, SettingsView, SettingsWindowHandle, SettingsWindowSeed,
     open_settings_window,

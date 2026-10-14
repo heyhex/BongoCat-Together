@@ -18,6 +18,10 @@ dev:
 dev-smoke:
     cargo run --locked -p bongocat-app --release -- --run-seconds 4 --settings-window-smoke
 
+# Exercise a real QUIC room and two independent Windows Live2D overlays.
+together-smoke:
+    cargo run --locked -p bongocat-app -- --together-smoke
+
 # Run a deterministic Live2D diagnostic preview.
 preview model="standard" seconds="30":
     cargo run --locked -p bongocat-overlay --release -- "{{model}}" "{{seconds}}"

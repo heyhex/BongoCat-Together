@@ -32,6 +32,10 @@ mod product_windows;
 mod smoke;
 mod smoke_status;
 mod system_menu;
+#[cfg(target_os = "windows")]
+mod together_overlay;
+#[cfg(target_os = "windows")]
+mod together_smoke;
 // Windows only in a product build, since the taskbar button is; the tests read
 // the settle decision on every platform, which is the point of keeping it apart
 // from the smoke that polls with it.
@@ -187,6 +191,12 @@ async fn settle_taskbar_icon(
 }
 
 struct ProductCoordinator {
+    together_layout: bongocat_ui_protocol::TogetherLayoutClient,
+    #[cfg(target_os = "windows")]
+    together_overlay: Rc<RefCell<together_overlay::TogetherOverlay>>,
+    #[cfg(target_os = "windows")]
+    together_badge: Option<bongocat_ui::CompanionBadgeHandle>,
+    together_service: Option<bongocat_network::NetworkService>,
     _core_log: CoreLogHandle,
     #[cfg(target_os = "macos")]
     overlay: Option<ProductOverlaySession>,
@@ -430,6 +440,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let initial_dock_icon_visible = application.config().system.show_dock_icon;
     let main_thread_signals = bongocat_app::ApplicationMainThreadSignals::default();
     let input_producer = application.input_producer();
+    #[cfg(target_os = "windows")]
+    let together_service = bongocat_network::NetworkService::start().ok();
+    #[cfg(target_os = "macos")]
+    let together_service: Option<bongocat_network::NetworkService> = None;
+    #[cfg(target_os = "windows")]
+    if let Some(service) = together_service.as_ref() {
+        input_producer.set_observer(Some(Arc::new(bongocat_app::TogetherInputObserver::new(
+            service.client(),
+            bongocat_platform::foreground_executable_name,
+        ))));
+    }
     let cursor_producer = application.cursor_producer();
     let gamepad_axis_producer = application.gamepad_axis_producer();
     let render_consumer = application.take_render_consumer()?;
@@ -486,7 +507,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             record_failure(&run_failures, format!("apply startup native theme: {error}"));
         }
         let overlay = match ProductOverlaySession::start_with_interaction_sinks(
-            runtime_client,
+            runtime_client.clone(),
             input_producer,
             cursor_producer,
             gamepad_axis_producer,
@@ -604,7 +625,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let overlay = Rc::new(RefCell::new(Some(overlay)));
         #[cfg(target_os = "windows")]
         let frame_overlay = Rc::clone(&overlay);
+        let together_layout = bongocat_ui_protocol::TogetherLayoutClient::default();
+        #[cfg(target_os = "windows")]
+        let frame_together_layout = together_layout.clone();
+        #[cfg(target_os = "windows")]
+        let together_overlay = Rc::new(RefCell::new(together_overlay::TogetherOverlay::new(preset_root(), together_layout.clone())));
+        #[cfg(target_os = "windows")]
+        let frame_together_overlay = Rc::clone(&together_overlay);
         cx.set_global(ProductCoordinator {
+            together_layout,
+            #[cfg(target_os = "windows")]
+            together_overlay,
+            #[cfg(target_os = "windows")]
+            together_badge: None,
+            together_service,
             _core_log: core_log,
             #[cfg(target_os = "macos")]
             overlay: Some(overlay),
@@ -1132,6 +1166,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut gamepad_connections = GamepadConnectionObserver::default();
             let mut retry_delay = None;
             let mut frame_pacer: Option<bongocat_runtime::FramePacer> = None;
+            #[cfg(target_os = "windows")]
+            let mut last_badge_update = Instant::now();
+            #[cfg(target_os = "windows")]
+            let mut last_swap_epoch = 0;
             loop {
                 // Only the pacing inputs are read here. The overlay session reads
                 // the full snapshot inside `tick`, so asking for a second copy per
@@ -1296,6 +1334,79 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     frame_active = false;
                 }
                 #[cfg(target_os = "windows")]
+                {
+                    let peer_client = cx.update(|cx| cx.try_global::<ProductCoordinator>()
+                        .and_then(|coordinator| coordinator.together_service.as_ref())
+                        .map(|service| service.client()));
+                    let peer = peer_client.as_ref().map(|client| client.snapshot());
+                    if last_badge_update.elapsed() >= Duration::from_millis(100)
+                        && peer.as_ref().is_some_and(|s| !matches!(s.phase, bongocat_network::Phase::Offline | bongocat_network::Phase::Failed))
+                        && let Some(client) = peer_client.as_ref() {
+                        let current = frame_runtime_client.snapshot();
+                        if let Some(model) = current.active_model {
+                            let _ = client.set_peer_info(bongocat_network::PeerInfo {
+                                model_id: model.id.as_str().to_owned(),
+                                built_in: current.active_model_origin == Some(bongocat_model::ModelOrigin::Preset),
+                                scale_percent: current.overlay_settings.scale_percent,
+                            });
+                        }
+                    }
+                    if let Some(client) = peer_client.as_ref()
+                        && client.sharing_policy().mouse && !client.sharing_policy().paused
+                        && let Some(sample) = frame_runtime_client.snapshot().cursor.sample {
+                        let normalized = sample.normalized();
+                        client.publish_cursor([(1.0 - normalized.x) / 2.0, (1.0 - normalized.y) / 2.0]);
+                    }
+                    let bounds = frame_overlay.borrow().as_ref().and_then(|overlay| overlay.window_bounds().ok());
+                    // Optional friend failures are exposed through typed layout
+                    // status and a retry notification; offline product quit remains normal.
+                    let _ = frame_together_overlay.borrow_mut().tick(peer.as_ref(), peer_client.as_ref(), bounds);
+                    let layout = frame_together_layout.snapshot();
+                    let friend_bounds = frame_together_overlay.borrow().window_bounds();
+                    if layout.swap_epoch != last_swap_epoch
+                        && let (Some(local), Some(remote)) = (bounds, friend_bounds) {
+                        if (layout.swap_epoch - last_swap_epoch) % 2 == 1 {
+                            let _ = frame_overlay.borrow_mut().as_mut().expect("local overlay exists").set_position(remote.x, remote.y);
+                            let _ = frame_together_overlay.borrow_mut().set_position(local.x, local.y);
+                        }
+                        last_swap_epoch = layout.swap_epoch;
+                    }
+                    if last_badge_update.elapsed() >= Duration::from_millis(100) {
+                        let anchor = if layout.visible { frame_together_overlay.borrow().window_bounds().or(bounds) } else { bounds };
+                        let badge_snapshot = peer.as_ref().filter(|s| {
+                            let share = s.local_share;
+                            s.phase == bongocat_network::Phase::Connected && (layout.visible || (!share.paused && (
+                                share.keyboard != bongocat_network::KeyboardMode::Off || share.mouse || share.text)))
+                        }).cloned().map(|mut snapshot| {
+                            if !layout.visible {
+                                snapshot.peer_nickname = None;
+                                snapshot.remote = Default::default();
+                            }
+                            snapshot
+                        });
+                        cx.update(|cx| {
+                            let (badge, language) = {
+                                let coordinator = cx.global_mut::<ProductCoordinator>();
+                                (coordinator.together_badge.take(), coordinator.product_language)
+                            };
+                            if let (Some(snapshot), Some(anchor)) = (badge_snapshot.as_ref(), anchor) {
+                                let badge = badge.or_else(|| peer_client.as_ref().and_then(|client| bongocat_ui::open_companion_badge(client.clone(), cx).ok()));
+                                if let Some(badge) = badge {
+                                    if badge.update(snapshot, language, (anchor.x, anchor.y, anchor.width), cx).is_ok() {
+                                        cx.global_mut::<ProductCoordinator>().together_badge = Some(badge);
+                                    } else {
+                                        if let Some(client) = peer_client.as_ref() { client.indicator_unavailable(); }
+                                        badge.close(cx);
+                                    }
+                                } else if let Some(client) = peer_client.as_ref() {
+                                    client.indicator_unavailable();
+                                }
+                            } else if let Some(badge) = badge { badge.close(cx); }
+                        });
+                        last_badge_update = Instant::now();
+                    }
+                }
+                #[cfg(target_os = "windows")]
                 let next_retry_delay = tick_result
                     .as_ref()
                     .and_then(|result| result.as_ref().ok())
@@ -1445,6 +1556,28 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         })
         .detach();
+
+        #[cfg(target_os = "windows")]
+        if run_options.together_smoke {
+            cx.global::<ProductCoordinator>().settings_navigation_memory.set_page_index(7);
+            let opened = ensure_settings_window(cx);
+            let coordinator = cx.global::<ProductCoordinator>();
+            let client = coordinator.together_service.as_ref().map(|service| service.client());
+            let friend = Rc::clone(&coordinator.together_overlay);
+            let failures = Arc::clone(&coordinator.failures);
+            let local = runtime_client.clone();
+            cx.spawn(async move |cx| {
+                let result = match (opened, client) {
+                    (Ok(_), Some(client)) => together_smoke::run(client, friend, local, cx).await,
+                    _ => Err("Together settings/service failed to open".into()),
+                };
+                match result {
+                    Ok(()) => { let _ = write_smoke_status("Together smoke: encrypted_direct=true dual_overlay=true friend_key_isolated=true text_unicode=true disconnect_cleanup=true"); }
+                    Err(error) => record_failure(&failures, error),
+                }
+                cx.update(request_product_quit);
+            }).detach();
+        }
 
         if run_options.hidden_model_switch_smoke {
             let smoke_client = settings_client.clone();

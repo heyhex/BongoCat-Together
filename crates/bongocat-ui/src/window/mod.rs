@@ -156,6 +156,9 @@ mod setting_request;
 mod shortcut_capture;
 mod startup_item;
 mod theme;
+mod together;
+#[cfg(target_os = "windows")]
+pub(crate) use together::key_chord;
 mod tokens;
 
 // Every module the split added reaches its neighbours through this one prelude
@@ -215,6 +218,8 @@ pub struct SettingsWindowSeed {
 }
 
 pub struct SettingsView {
+    pub(crate) together: Option<Entity<together::TogetherView>>,
+    pub(crate) together_subscription: Option<gpui_kit::Subscription>,
     #[cfg(target_os = "windows")]
     pub(crate) window_background_color: Entity<gpui_kit::component::color_picker::ColorPickerState>,
     #[cfg(target_os = "windows")]
