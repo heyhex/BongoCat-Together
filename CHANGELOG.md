@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-10-15
 
 ### ✨ Features
 
@@ -14,6 +14,7 @@
 
 ### ⚠️ Upgrade Notice
 
+- Together starts its own version sequence at 0.1.0, based on BongoCat 2.3.1. Earlier entries below retain the upstream release history.
 - Together can use n0 public discovery and relay services. Local cat interaction remains available offline. Together display choices currently last for one application process; the existing configuration format is unchanged.
 - This feature is under development. Cross-network, IME, DPI and soak acceptance and installer distribution gates remain pending.
 
