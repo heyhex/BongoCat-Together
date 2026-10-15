@@ -11,7 +11,7 @@
 基于 [BongoCat](https://github.com/ayangweb/BongoCat) 的 Windows 开发版本，增加可选的双人加密房间。
 保留自己的桌宠，在旁边显示好友的猫，分别选择是否分享键盘活动、鼠标动作，以及专用输入框中的文字。
 
-**开发版 · Windows x64 · Together 暂未发布安装包或 Release。**
+**开发版 · Windows x64 · [Together Release](https://github.com/heyhex/BongoCat-Together/releases) 提供开发测试包。**
 
 ## 一个邀请码，两只独立的猫
 
@@ -44,11 +44,19 @@ $env:RUSTUP_TOOLCHAIN='1.97.1-x86_64-pc-windows-msvc'
 just dev
 ```
 
-当前仓库为私有仓库，克隆需要访问权限。双方各自运行一份源码工作区，从托盘打开设置，进入「好友联机」，
+当前仓库已公开。双方可安装 Together 测试包或各自运行源码工作区，从托盘打开设置，进入「好友联机」，
 创建或加入房间，再开启需要的分享。邀请码用于首次加入的期限为十分钟，重连后分享恢复关闭。
 
 开发数据与已安装的 BongoCat 生产版隔离。自行构建的程序依赖工作区资源，不是可单独复制的便携包。
 连接、模型与分享的详细操作见[完整使用说明](docs/bongocat-together-usage.zh-CN.md)。
+
+## 检查更新
+
+通过托盘或「设置 → 关于」点击「检查更新」。只检查
+[heyhex/BongoCat-Together](https://github.com/heyhex/BongoCat-Together/releases)，
+包含预发布版；有更新且存在对应 Windows x64 安装包时，可打开对应 Release 页面下载。
+自动检查沿用现有开关与检查间隔。下载和安装由用户手动完成，不提供自动安装。
+已发布的 0.1.0 安装包尚不包含此功能，请安装 0.1.1 或后续版本。
 
 ## 给好友的猫留个位置
 

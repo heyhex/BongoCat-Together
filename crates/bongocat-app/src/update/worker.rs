@@ -113,6 +113,9 @@ pub(crate) fn run_install(
     state: &UpdateStateHandle,
     application_log: Option<&ApplicationLogHandle>,
 ) {
+    if !engine.supports_install() {
+        return;
+    }
     if let Some(reason) = engine.unavailability() {
         state.publish(UpdatePhase::Unavailable {
             reason: unavailable_reason(reason),

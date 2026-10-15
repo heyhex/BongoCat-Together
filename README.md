@@ -13,7 +13,7 @@ with optional encrypted two-person rooms. Keep your own cat and show a friend's
 cat beside it; choose whether to share keyboard activity, mouse actions, or text
 typed into a dedicated field.
 
-**Development build · Windows x64 · No installer or Release published for Together.**
+**Development build · Windows x64 · [Together releases](https://github.com/heyhex/BongoCat-Together/releases).**
 
 ## One invitation, two independent cats
 
@@ -50,7 +50,7 @@ $env:RUSTUP_TOOLCHAIN='1.97.1-x86_64-pc-windows-msvc'
 just dev
 ```
 
-This repository is private; cloning requires access to it. Both peers run their
+This repository is public. Both peers can install a Together release or run their
 own source checkout. Open settings from the tray, select **Together**, create or
 join a room, then enable the sharing you want. Invitations expire for first join
 after ten minutes. Sharing returns to off after reconnection.
@@ -58,6 +58,15 @@ after ten minutes. Sharing returns to off after reconnection.
 Development data is separate from an installed production BongoCat. A locally
 built executable depends on workspace resources; it is not a standalone portable package.
 See the [full guide](docs/bongocat-together-usage.md) for connection, model and sharing controls.
+
+## Check for updates
+
+Use **Check for Updates** from the tray or Settings → About. It checks only
+[heyhex/BongoCat-Together](https://github.com/heyhex/BongoCat-Together/releases),
+including prereleases, and opens the matching Release page when a newer Windows
+x64 installer is available. Automatic checks use the existing preference and interval.
+Updates are downloaded and installed manually; no automatic installation is offered.
+The published 0.1.0 package predates this feature; install 0.1.1 or later to use it.
 
 ## Make room for your friend's cat
 

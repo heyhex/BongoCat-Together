@@ -183,7 +183,10 @@ impl Render for UpdateView {
             // Idle 是首次检查；UpToDate 和 Failed 都意味着至少检查过一次，动作是"再来一次"。
             // 用"重新检查"而不是"重试"：点击走的是完整的 check → available → 重新下载，
             // 不是续传，措辞必须与真实动作一致。
-            let check_key = if matches!(phase, UpdatePhase::UpToDate | UpdatePhase::Failed { .. }) {
+            let check_key = if matches!(
+                phase,
+                UpdatePhase::UpToDate | UpdatePhase::Available { .. } | UpdatePhase::Failed { .. }
+            ) {
                 "update.action.recheck"
             } else {
                 "update.action.check"

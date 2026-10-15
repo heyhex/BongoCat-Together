@@ -146,16 +146,16 @@ class PackagingTargetTests(unittest.TestCase):
         source = read(PACKAGER)
         self.assertIn("fn installer_file_name(self)", source)
         self.assertIn("fn rename_windows_installer(", source)
-        self.assertIn('"{PRODUCT_NAME}_{}_{}.exe"', source)
+        self.assertIn('"BongoCat-Together_{}_{}.exe"', source)
         self.assertIn("rename_windows_installer(target, &mut artifacts)?;", source)
 
         workflow = read(RELEASE_WORKFLOW)
-        self.assertIn("BongoCat_${env:version}_x64.exe", workflow)
+        self.assertIn("BongoCat-Together_${env:version}_x64.exe", workflow)
         # The installer is the Windows update payload, so it is uploaded together with
         # the signature and the manifest the updater reads.
         for uploaded in (
-            "target/package/BongoCat_*.exe",
-            "target/package/BongoCat_*.exe.sig",
+            "target/package/BongoCat-Together_*.exe",
+            "target/package/BongoCat-Together_*.exe.sig",
             "target/package/windows-x86_64.json",
         ):
             with self.subTest(uploaded=uploaded):

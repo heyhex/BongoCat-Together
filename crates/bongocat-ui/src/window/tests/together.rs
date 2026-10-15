@@ -38,6 +38,78 @@ fn frame(visual: &mut VisualTestContext) {
 }
 
 #[gpui_kit::test]
+fn together_nickname_accepts_click_and_keyboard_input_before_connecting(cx: &mut TestAppContext) {
+    cx.update(gpui_kit::init);
+    let service = bongocat_network::NetworkService::start().unwrap();
+    for language in [
+        SettingsLanguage::English,
+        SettingsLanguage::ChineseSimplified,
+    ] {
+        for width in [800., 1000.] {
+            let client = service.client();
+            let (_, visual) = cx.add_window_view(move |window, cx| {
+                let view = cx.new(|cx| {
+                    TogetherView::new(
+                        client,
+                        TogetherLayoutClient::default(),
+                        language,
+                        window,
+                        cx,
+                    )
+                });
+                let harness = cx.new(|_| TogetherPageHarness {
+                    view,
+                    group: Some(0),
+                });
+                Root::new(harness, window, cx)
+            });
+            visual.simulate_resize(size(px(width), px(600.)));
+            frame(visual);
+            visual.update(|window, cx| {
+                let nickname = window.find("together-nickname-input");
+                assert!(
+                    nickname.bounds().size.width > px(100.),
+                    "{language:?}, width={width}: nickname needs a usable click target, got {:?}",
+                    nickname.bounds()
+                );
+                assert!(
+                    nickname.bounds().origin.x >= window.find("0-0").bounds().right()
+                        && nickname.bounds().right() <= px(width - 16.),
+                    "nickname must stay inside the settings pane"
+                );
+                window.click("together-nickname-input", cx);
+                window.press(
+                    if cfg!(target_os = "macos") {
+                        "cmd-a"
+                    } else {
+                        "ctrl-a"
+                    },
+                    cx,
+                );
+                window.input("Alice猫", cx);
+                assert_eq!(
+                    window.find("together-nickname-input").value(),
+                    Some("Alice猫")
+                );
+                window.press("backspace", cx);
+                window.input("兔", cx);
+                assert_eq!(
+                    window.find("together-nickname-input").value(),
+                    Some("Alice兔")
+                );
+            });
+            frame(visual);
+            visual.update(|window, _| {
+                assert_eq!(
+                    window.find("together-nickname-input").value(),
+                    Some("Alice兔")
+                );
+            });
+        }
+    }
+}
+
+#[gpui_kit::test]
 fn together_controls_fit_the_settings_content_width(cx: &mut TestAppContext) {
     cx.update(gpui_kit::init);
     let service = bongocat_network::NetworkService::start().unwrap();

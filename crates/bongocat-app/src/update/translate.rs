@@ -20,6 +20,7 @@ pub(crate) fn failure_phase(error: UpdateError, release: Option<UpdateReleaseInf
 pub(crate) fn release_info(engine: &dyn UpdateEngine, release: UpdateRelease) -> UpdateReleaseInfo {
     UpdateReleaseInfo {
         release_page_url: engine.release_page_url(&release.version),
+        installable: engine.supports_install(),
         version: release.version,
         notes: release.notes,
     }

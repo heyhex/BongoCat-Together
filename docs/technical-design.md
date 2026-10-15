@@ -1779,3 +1779,15 @@ Together 设置页使用与其他页面一致的 `SettingPage → SettingGroup �
 使用纵向整行，不把整个页面嵌入横向设置项右侧的 field。动作按钮使用受内容宽度约束的换行容器，
 页面滚动与窄内容区的上下布局由 GPUI Kit Settings 管理。Together 状态 Entity 的通知由 SettingsView
 订阅，用于更新分组与控件状态；网络服务与设置窗口的生命周期边界不变。
+
+
+### Together 版本检查（ADR-0091）
+
+Together 使用现有更新 worker、窗口与自动检查设置，但只匿名请求
+`heyhex/BongoCat-Together` 的 GitHub Releases API。包含预发布版，只识别
+`together-v<semver>` 标签，检查最新版本的 Windows x64 安装包与 HTTPS URL 归属。
+网络、响应格式、分页不完整与附件缺失均显示失败，不报告已最新。
+
+Release DTO 显式声明是否可自动安装；Together 只提供下载页入口，UI 与 worker
+均拒绝安装。Development 和 Production 均可读取公开版本信息，环境数据隔离不变。
+签名安装管线保留，但 Together 未配置公钥，不能继承原版签名信任或安装未签名载荷。

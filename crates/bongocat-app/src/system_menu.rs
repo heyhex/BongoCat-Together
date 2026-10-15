@@ -26,16 +26,8 @@ pub(crate) fn system_menu_presentation(snapshot: &SettingsSnapshot) -> SystemMen
         click_through_enabled: snapshot.overlay.click_through,
         always_on_top_enabled: snapshot.overlay.always_on_top,
         hide_on_pointer_hover_enabled: snapshot.overlay.hide_on_pointer_hover,
-        // A Production build stays gated on its channel and release signing key
-        // (`bongocat_app::update_check_available`): without them a check can only fail.
-        // A Development build can never update either, but the update window is where
-        // that is *explained* (`Unavailable · DevelopmentBuild`), so its entry stays
-        // clickable and clicking it shows the development-build explanation.
-        update_check_available: bongocat_app::update_check_available()
-            || matches!(
-                bongocat_app::BUILD_ENVIRONMENT,
-                bongocat_config::BuildEnvironment::Development
-            ),
+        // Together checks only release metadata in either build environment.
+        update_check_available: bongocat_app::update_check_available(),
     }
 }
 

@@ -1,10 +1,7 @@
 //! What the worker is allowed to ask of the update subsystem.
 //!
-//! The worker talks to a trait rather than to [`UpdateRuntime`] directly, so a
-//! test can supply an engine that is not the network. That is the only reason the
-//! trait exists: there is one real implementation, and the second one is a fake
-//! that lets a failed check and a half-finished install be exercised without a
-//! server.
+//! Signed installation and read-only Together notifications share the state
+//! machine. Each engine explicitly declares whether installation is supported.
 
 use super::*;
 
@@ -16,6 +13,7 @@ use super::*;
 /// [`UpdateRuntime`] directly is what lets that state machine be exercised without a
 /// network, a published release or a real install.
 pub(crate) trait UpdateEngine: Send + 'static {
+    fn supports_install(&self) -> bool;
     fn unavailability(&self) -> Option<UpdateUnavailability>;
     fn release_page_url(&self, version: &str) -> Option<String>;
     fn check(&self) -> Result<UpdateOutcome, UpdateError>;
@@ -23,6 +21,10 @@ pub(crate) trait UpdateEngine: Send + 'static {
 }
 
 impl UpdateEngine for UpdateRuntime {
+    fn supports_install(&self) -> bool {
+        true
+    }
+
     fn unavailability(&self) -> Option<UpdateUnavailability> {
         UpdateRuntime::unavailability(self)
     }
@@ -37,5 +39,30 @@ impl UpdateEngine for UpdateRuntime {
 
     fn install(&self, observe: &dyn Fn(UpdateEvent)) -> Result<UpdateOutcome, UpdateError> {
         self.install_with_observer(observe)
+    }
+}
+
+impl UpdateEngine for TogetherReleaseChecker {
+    fn supports_install(&self) -> bool {
+        false
+    }
+
+    fn unavailability(&self) -> Option<UpdateUnavailability> {
+        None
+    }
+
+    fn release_page_url(&self, version: &str) -> Option<String> {
+        TogetherReleaseChecker::release_page_url(version)
+    }
+
+    fn check(&self) -> Result<UpdateOutcome, UpdateError> {
+        TogetherReleaseChecker::check(self)
+    }
+
+    fn install(&self, _: &dyn Fn(UpdateEvent)) -> Result<UpdateOutcome, UpdateError> {
+        Err(UpdateError::at(
+            bongocat_update::UpdateStage::Install,
+            bongocat_update::UpdateErrorCode::SignatureKeyMissing,
+        ))
     }
 }

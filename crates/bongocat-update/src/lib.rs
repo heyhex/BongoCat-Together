@@ -1,5 +1,9 @@
 //! BongoCat update subsystem.
 //!
+//! Together uses [`TogetherReleaseChecker`] for anonymous version notifications
+//! and manual Release-page downloads. Signed installation remains disabled until
+//! Together provisions its own signing key (ADR-0091).
+//!
 //! The release-manifest fetch → version comparison → download → signature
 //! verification → install → restart pipeline is provided by
 //! [`cargo_packager_updater`]. This crate owns only the BongoCat-specific policy
@@ -18,7 +22,7 @@
 //! its format; the runtime requests that manifest, lets the library pick this host's
 //! entry out of it, downloads the payload, verifies it against [`RELEASE_SIGNING_KEY`]
 //! before a single byte is installed, and only then hands it to the platform installer.
-//! The provisioned [`RELEASE_SIGNING_KEY`] is compiled into the build. The runtime also
+//! An optional [`RELEASE_SIGNING_KEY`] is compiled into the build. The runtime also
 //! refuses to run an update when that value is absent, empty or whitespace, so a build
 //! with no configured key cannot install an unsigned payload.
 //!
@@ -31,6 +35,9 @@
 mod diagnostics;
 mod release;
 mod runtime;
+mod together;
+
+pub use together::TogetherReleaseChecker;
 
 pub use diagnostics::{
     UpdateDiagnostics, UpdateDiagnosticsTracker, UpdateErrorCode, is_stable_error_code,

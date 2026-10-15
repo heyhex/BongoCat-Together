@@ -3,6 +3,15 @@
 Together is currently a Windows x64 development feature for two people. No account or self-hosted server is needed.
 Local cat interaction remains available offline.
 
+## Check for updates
+
+The tray and Settings → About offer **Check for Updates**. Checks read only
+Together releases (including prereleases), then offer the matching GitHub Release
+page for manual download and installation. Existing automatic-check preferences
+and intervals apply. Upstream BongoCat releases are never queried. Development
+and Production can both check, without changing their isolated data directories.
+The published 0.1.0 package predates this feature; use 0.1.1 or later, or current source.
+
 ## Start and connect
 
 In the checkout, run PowerShell with the MSVC toolchain and use the existing development entry point:

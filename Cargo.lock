@@ -1138,6 +1138,7 @@ dependencies = [
  "cargo-packager",
  "cargo-packager-updater",
  "flate2",
+ "serde",
  "serde_json",
  "tar",
  "thiserror 2.0.21",

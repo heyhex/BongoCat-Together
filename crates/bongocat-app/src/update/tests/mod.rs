@@ -27,6 +27,7 @@ use tempfile::tempdir;
 /// scripted rather than faked: the test says exactly which events and which outcome
 /// the pipeline produces and then asserts what the window would have seen.
 struct ScriptedEngine {
+    supports_install: bool,
     unavailability: Option<UpdateUnavailability>,
     check_outcome: Result<UpdateOutcome, UpdateError>,
     install_outcome: Result<UpdateOutcome, UpdateError>,
@@ -38,6 +39,7 @@ impl ScriptedEngine {
     /// A build whose check produces `outcome` and whose install is never entered.
     fn available(outcome: Result<UpdateOutcome, UpdateError>) -> Self {
         Self {
+            supports_install: true,
             unavailability: None,
             check_outcome: outcome,
             install_outcome: Ok(UpdateOutcome::UpToDate),
@@ -50,6 +52,7 @@ impl ScriptedEngine {
     /// after replaying `events`.
     fn installing(outcome: Result<UpdateOutcome, UpdateError>, events: Vec<UpdateEvent>) -> Self {
         Self {
+            supports_install: true,
             unavailability: None,
             check_outcome: Ok(UpdateOutcome::Available { release: release() }),
             install_outcome: outcome,
@@ -60,6 +63,10 @@ impl ScriptedEngine {
 }
 
 impl UpdateEngine for ScriptedEngine {
+    fn supports_install(&self) -> bool {
+        self.supports_install
+    }
+
     fn unavailability(&self) -> Option<UpdateUnavailability> {
         self.unavailability
     }

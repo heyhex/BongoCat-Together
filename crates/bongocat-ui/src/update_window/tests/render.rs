@@ -24,6 +24,7 @@ fn release(notes: Option<&str>) -> UpdateReleaseInfo {
         version: "9.9.9".to_owned(),
         notes: notes.map(str::to_owned),
         release_page_url: Some("https://example.invalid/v9.9.9".to_owned()),
+        installable: true,
     }
 }
 
@@ -200,6 +201,27 @@ fn every_phase_renders_and_offers_only_its_own_actions(cx: &mut TestAppContext) 
             expected,
             "{phase:?} rendered the wrong footer actions"
         );
+    }
+}
+
+#[gpui_kit::test]
+fn browser_only_release_offers_the_download_page_and_recheck_without_install(
+    cx: &mut TestAppContext,
+) {
+    for language in [
+        SettingsLanguage::English,
+        SettingsLanguage::ChineseSimplified,
+    ] {
+        let mut release = release(Some("Together release notes"));
+        release.installable = false;
+        let harness = harness(cx, UpdatePhase::Available { release });
+        cx.update_entity(&harness.view, |view, _| view.language = language);
+        harness.paint(cx, |window, _| {
+            assert!(window.try_find("update-release-notes").is_some());
+            assert!(window.try_find("update-check").is_some());
+            assert!(window.try_find("update-install").is_none());
+            assert!(window.try_find("update-restart").is_none());
+        });
     }
 }
 

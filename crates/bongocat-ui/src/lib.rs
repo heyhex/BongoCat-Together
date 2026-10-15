@@ -210,6 +210,7 @@ pub(crate) mod tests {
             version: "9.9.9".to_owned(),
             notes: notes.map(str::to_owned),
             release_page_url: Some("https://example.invalid/v9.9.9".to_owned()),
+            installable: true,
         };
         let progress = |downloaded: u64, total: Option<u64>| UpdateProgressInfo {
             downloaded_bytes: downloaded,

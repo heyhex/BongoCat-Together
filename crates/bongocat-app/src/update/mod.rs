@@ -1,6 +1,6 @@
 //! The application-owned update worker.
 //!
-//! One dedicated thread owns the [`UpdateRuntime`] for the lifetime of the process
+//! One dedicated thread owns the Together release checker for the lifetime of the process
 //! and is the only thing that touches the network. It converts the update
 //! subsystem's own types into the UI protocol in `bongocat-ui-protocol` and publishes
 //! the result into shared state, so the GPUI thread never blocks on a check, a transfer
@@ -28,8 +28,8 @@ use bongocat_ui_protocol::{
     UpdateStateHandle, UpdateUnavailableReason,
 };
 use bongocat_update::{
-    UpdateDiagnosticsTracker, UpdateError, UpdateEvent, UpdateOutcome, UpdateRelease,
-    UpdateRuntime, UpdateUnavailability,
+    TogetherReleaseChecker, UpdateDiagnosticsTracker, UpdateError, UpdateEvent, UpdateOutcome,
+    UpdateRelease, UpdateRuntime, UpdateUnavailability,
 };
 
 mod engine;
@@ -69,16 +69,16 @@ pub struct ApplicationUpdateService {
 impl ApplicationUpdateService {
     /// Start the worker for this build.
     ///
-    /// The runtime is derived from the immutable build environment and the compiled
-    /// version, so no runtime input can retarget an update.
+    /// Read-only notifications use the compiled version and Together repository
+    /// in either environment; they never replace installation files.
     pub fn start(
-        environment: BuildEnvironment,
+        _environment: BuildEnvironment,
         current_version: &'static str,
         diagnostics: UpdateDiagnosticsTracker,
         application_log: ApplicationLogHandle,
     ) -> Result<Self, UpdateServiceError> {
         Self::start_with_engine_and_log(
-            UpdateRuntime::for_current_build(environment, current_version, diagnostics),
+            TogetherReleaseChecker::new(current_version, diagnostics),
             current_version,
             Some(application_log),
         )

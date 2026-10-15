@@ -192,6 +192,7 @@ fn a_check_is_only_asked_for_when_one_would_start() {
                 version: "9.9.9".to_owned(),
                 notes: None,
                 release_page_url: None,
+                installable: true,
             },
             progress: crate::UpdateProgressInfo::default(),
         },

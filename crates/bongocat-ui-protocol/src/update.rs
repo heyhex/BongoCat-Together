@@ -132,6 +132,8 @@ impl UpdateErrorCode {
 /// A published release the running build could move to.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UpdateReleaseInfo {
+    /// False for browser-only version notifications.
+    pub installable: bool,
     pub version: String,
     /// The release changelog the manifest announced, when it announced one.
     pub notes: Option<String>,
@@ -228,12 +230,15 @@ impl UpdatePhase {
 
     /// Whether the window should offer to download and install.
     pub const fn offers_install(&self) -> bool {
-        matches!(self, Self::Available { .. })
+        matches!(self, Self::Available { release } if release.installable)
     }
 
     /// Whether the window should offer to check again.
     pub const fn offers_check(&self) -> bool {
-        matches!(self, Self::Idle | Self::UpToDate | Self::Failed { .. })
+        matches!(
+            self,
+            Self::Idle | Self::UpToDate | Self::Available { .. } | Self::Failed { .. }
+        )
     }
 
     /// Whether the window should offer to restart into the installed build.
@@ -434,6 +439,7 @@ mod tests {
             version: "1.2.0".to_owned(),
             notes: Some("- a change".to_owned()),
             release_page_url: Some("https://example.invalid/v1.2.0".to_owned()),
+            installable: true,
         }
     }
 

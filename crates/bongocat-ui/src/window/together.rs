@@ -395,7 +395,15 @@ impl TogetherView {
                 cx,
                 |view, options, _, _| {
                     Input::new(&view.nickname)
+                        .id("together-nickname-input")
                         .disabled(options.is_disabled())
+                        .map(|input| {
+                            if options.layout() == Axis::Horizontal {
+                                input.w_64()
+                            } else {
+                                input.w_full()
+                            }
+                        })
                         .into_any_element()
                 },
             ))

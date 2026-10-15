@@ -3,6 +3,44 @@
 use super::*;
 
 #[test]
+fn browser_only_release_cannot_enter_install_even_via_a_direct_command() {
+    let engine = ScriptedEngine {
+        supports_install: false,
+        ..ScriptedEngine::available(Ok(UpdateOutcome::Available { release: release() }))
+    };
+    let state = UpdateStateHandle::default();
+    crate::update::worker::run_check(&engine, &state, None);
+    let checked = state.phase();
+    assert!(matches!(&checked, UpdatePhase::Available { release } if !release.installable));
+    assert!(!checked.offers_install());
+    assert!(checked.offers_check());
+    crate::update::worker::run_install(&engine, &state, None);
+    assert_eq!(state.phase(), checked);
+    assert_eq!(*engine.installs.lock().unwrap(), 0);
+}
+
+#[test]
+fn together_engine_exposes_read_only_checks_without_an_upstream_signing_key() {
+    let checker = bongocat_update::TogetherReleaseChecker::new(
+        "0.1.0",
+        bongocat_update::UpdateDiagnosticsTracker::default(),
+    );
+    assert!(!checker.supports_install());
+    assert_eq!(checker.unavailability(), None);
+    assert_eq!(
+        checker.release_page_url("0.2.0").as_deref(),
+        Some("https://github.com/heyhex/BongoCat-Together/releases/tag/together-v0.2.0")
+    );
+    assert_eq!(
+        checker
+            .install(&|_| panic!("read-only checker emitted an install event"))
+            .unwrap_err()
+            .code(),
+        SourceCode::SignatureKeyMissing
+    );
+}
+
+#[test]
 fn a_check_that_finds_a_release_publishes_its_metadata() {
     let (phase, _) = settled_phase(
         ScriptedEngine::available(Ok(UpdateOutcome::Available { release: release() })),

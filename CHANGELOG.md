@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### ✨ Features
+
+- Added Together-only release checks, including prereleases, with a GitHub download-page link and optional scheduled checks. Updates are installed manually.
+
+### 🐛 Bug Fixes
+
+- Fixed the Together nickname field collapsing to its padding width, preventing normal clicking and editing before creating or joining a room.
+
 ## 0.1.0 - 2026-10-15
 
 ### ✨ Features

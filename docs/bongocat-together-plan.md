@@ -1,7 +1,7 @@
 # BongoCat Together progress
 
 Baseline: upstream v2.3.1, `30d0c34f557a76e7f265befa94e71704c813f8a9`, fetched on 2026-10-14.
-Scope: Windows x64 development, two peers, original offline behavior retained. Initial implementation was local; the source-only handoff uses the separate private `heyhex/BongoCat-Together` repository, without tags, a Release or installer uploads.
+Scope: Windows x64 development, two peers, original offline behavior retained. Initial implementation was local; the source-only handoff uses the separate `heyhex/BongoCat-Together` repository. It is public as of 2026-10-15, with the `together-v0.1.0` development prerelease.
 Implementation decision and dependency review: [ADR-0090](adr/0090-together-p2p-boundary.md).
 User instructions: [English](bongocat-together-usage.md) / [简体中文](bongocat-together-usage.zh-CN.md).
 
@@ -142,7 +142,7 @@ UI correction delivery: the updated optimized Development exe passed `just dev-s
 
 ## Private source handoff — 2026-10-14
 
-Destination: `heyhex/BongoCat-Together`, private. Retain upstream history and the
+Destination: `heyhex/BongoCat-Together`, public (changed with user authorization on 2026-10-15). Retain upstream history and the
 existing `origin`; use the separate `together` remote for this development work.
 This is an initial source upload, not a product release. Do not push tags or
 upload build outputs, installers, local data or logs. Actions are disabled on the
@@ -173,3 +173,57 @@ Upload verification:
   is historical, not a successful rerun for this upload.
 
 The real-world acceptance and release gates listed above remain outstanding.
+
+## Nickname editing correction — 2026-10-15
+
+The offline nickname Input was placed in a horizontal custom setting field without a width.
+Its percentage width was resolved against an auto-sized field, leaving only 22 px of padding at
+800×600. The new interaction regression reproduced this before the fix. The renderer now follows
+GPUI Kit 0.7.3's built-in StringField sizing: `w_64()` in horizontal rows and `w_full()` when
+Settings stacks the row vertically. The existing InputState and room-phase edit gate are retained.
+
+The GPUI regression uses the actual Settings/SettingGroup wrappers, pointer hit testing and
+keyboard dispatch in English and Simplified Chinese at widths of 800 and 1000 px. It replaces
+the default nickname with mixed Latin/Chinese text, deletes and inserts a character, and checks
+that the draft survives a new frame. This is simulated text input, not physical Chinese IME acceptance.
+The nickname edit case and both existing layout/scroll cases passed before the full workspace check.
+Reproduction log: `target/together-nickname-repro.log`; targeted checks: `target/together-nickname-regression.log`.
+
+Windows verification: `just check` passed (1,199 tests passed, five default-ignored entries),
+`just together-smoke` passed, and the rebuilt debug executable passed the original four-second
+settings close/reopen/runtime-continuity smoke with exit 0. Evidence:
+`target/together-nickname-check.log`, `target/together-nickname-native-smoke.log`, and
+`target/together-nickname-offline-smoke.stdout.log` / `.stderr.log` (stdout records the settings smoke result).
+The debug build is refreshed; the optimized installer and GitHub 0.1.0 assets are not replaced by this fix.
+Physical IME and per-monitor DPI remain outside this verification.
+
+
+## Together release notifications (2026-10-15, ADR-0091)
+
+Read-only checks use the public Together repository and `together-v<semver>` tags,
+including prereleases, with the exact Windows x64 installer and HTTPS URL checks.
+The existing worker/window/automatic-check preferences are reused. No persisted
+schema changes; Development and Production data remain isolated. Upstream's key
+is not inherited, and both the window and worker reject automatic installation.
+The published 0.1.0 installers contain neither this feature nor the nickname fix.
+Final-tree verification:
+
+- `just check`: fmt, all Clippy feature groups, workspace tests (1209 passed,
+  6 ignored) and release check passed. The live checker is one of the ignored
+  tests and was run separately below.
+- `cargo test --locked -p bongocat-update anonymous_live_together_release_check -- --ignored --nocapture`:
+  anonymous API requests found 0.1.0 from 0.0.0 and reported 0.1.0 current; no
+  downloads or installs started. `target/together-update-live.log`.
+- `python -m unittest tools.tests.test_packaging_contract tools.tests.test_update_release_contract tools.tests.test_release_changelog_contract`:
+  51 passed. `target/together-update-contract.log`.
+- `just together-smoke`: encrypted direct room, dual overlays, isolated friend
+  keys, Unicode text and disconnect cleanup passed. `target/together-update-native.log`.
+- Fresh debug executable `--run-seconds 4 --settings-window-smoke`: exit 0,
+  settings close/destroy/reopen passed. `target/together-update-settings.stdout.log`.
+- The public repository was read back with `isPrivate: false`; Actions remained
+  disabled. No new commit, tag, installer or Release was published.
+
+The paired Unreleased changelog entries cover this user-visible feature and the
+nickname fix. Remaining acceptance is the cross-network/IME/DPI/soak matrix in
+TOGETHER-WINDOWS. Signed automatic installation and macOS Together delivery are
+not implemented or accepted in this increment.

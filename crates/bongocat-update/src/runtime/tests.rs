@@ -23,8 +23,8 @@ use cargo_packager_updater::url::Url;
 fn configuration(channel: ReleaseChannel) -> ReleaseConfiguration {
     ReleaseConfiguration {
         channel,
-        repository_owner: "ayangweb",
-        repository_name: "BongoCat",
+        repository_owner: "heyhex",
+        repository_name: "BongoCat-Together",
         binary_name: "bongocat-app",
         bundle_name: Some("BongoCat.app"),
         target: UpdateTargetTriple::Aarch64AppleDarwin,
@@ -75,14 +75,12 @@ fn development_builds_never_reach_the_network() {
 }
 
 #[test]
-fn the_release_signing_key_is_provisioned() {
-    assert_eq!(
-        RELEASE_SIGNING_KEY,
-        Some(
-            "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IERGNUUyQzlEMjU1REQ4NUUKUldSZTJGMGxuU3hlMzIyMHdwUldMNTRvRStMb1hJZlI3T2w0TEdFRlI3YXhsa3k0NldGUW5EN20K"
-        )
-    );
-    assert!(configured_signing_key(RELEASE_SIGNING_KEY).is_some());
+fn together_does_not_trust_the_upstream_signing_key() {
+    assert_eq!(RELEASE_SIGNING_KEY, None);
+    let error = runtime_for(ReleaseChannel::Production)
+        .check()
+        .expect_err("no signing key");
+    assert_eq!(error.code(), UpdateErrorCode::SignatureKeyMissing);
 }
 
 #[test]
@@ -110,7 +108,7 @@ fn the_manifest_endpoint_is_the_shared_release_manifest() {
     );
     assert_eq!(
         endpoint.as_str(),
-        "https://github.com/ayangweb/BongoCat/releases/latest/download/latest.json"
+        "https://github.com/heyhex/BongoCat-Together/releases/latest/download/latest.json"
     );
     assert_eq!(endpoint.scheme(), "https");
 
@@ -226,7 +224,7 @@ fn the_proxied_manifest_endpoint_prefixes_the_official_url() {
 
     assert_eq!(
         proxied.as_str(),
-        "https://cdn.gh-proxy.org/https://github.com/ayangweb/BongoCat/releases/latest/download/latest.json"
+        "https://cdn.gh-proxy.org/https://github.com/heyhex/BongoCat-Together/releases/latest/download/latest.json"
     );
 }
 
@@ -253,7 +251,7 @@ fn manifest_sources_try_proxies_in_order_then_the_official_endpoint() {
     );
     assert_eq!(
         official.endpoint.as_str(),
-        "https://github.com/ayangweb/BongoCat/releases/latest/download/latest.json"
+        "https://github.com/heyhex/BongoCat-Together/releases/latest/download/latest.json"
     );
 }
 
@@ -366,12 +364,12 @@ fn a_manifest_without_this_platform_stops_the_source_fallback() {
 fn download_urls_are_proxied_only_when_official_github() {
     let proxy = Some("https://cdn.gh-proxy.org");
     let github = Url::parse(
-        "https://github.com/ayangweb/BongoCat/releases/download/v0.0.0-test/BongoCat_x64.exe",
+        "https://github.com/heyhex/BongoCat-Together/releases/download/v0.0.0-test/BongoCat_x64.exe",
     )
     .expect("the announced GitHub URL parses");
     assert_eq!(
         UpdateRuntime::proxied_download_url(proxy, &github).as_str(),
-        "https://cdn.gh-proxy.org/https://github.com/ayangweb/BongoCat/releases/download/v0.0.0-test/BongoCat_x64.exe"
+        "https://cdn.gh-proxy.org/https://github.com/heyhex/BongoCat-Together/releases/download/v0.0.0-test/BongoCat_x64.exe"
     );
 
     // The official run keeps the announced URL untouched.
@@ -511,11 +509,11 @@ fn the_release_page_url_follows_the_release_identity() {
     let runtime = runtime_for(ReleaseChannel::Production);
     assert_eq!(
         runtime.release_page_url("1.2.3").as_deref(),
-        Some("https://github.com/ayangweb/BongoCat/releases/tag/v1.2.3")
+        Some("https://github.com/heyhex/BongoCat-Together/releases/tag/together-v1.2.3")
     );
     assert_eq!(
         runtime.release_page_url("v1.2.3").as_deref(),
-        Some("https://github.com/ayangweb/BongoCat/releases/tag/v1.2.3")
+        Some("https://github.com/heyhex/BongoCat-Together/releases/tag/together-v1.2.3")
     );
 }
 
@@ -526,8 +524,8 @@ fn availability_requires_a_production_channel_and_a_signing_key() {
         "the development channel is disabled"
     );
     assert!(
-        runtime_for(ReleaseChannel::Production).is_available(),
-        "the provisioned signing key makes production updates available"
+        !runtime_for(ReleaseChannel::Production).is_available(),
+        "Together signed installation has no provisioned key"
     );
 }
 
@@ -540,7 +538,7 @@ fn unavailability_names_the_gate_that_closed() {
     );
     assert_eq!(
         runtime_for(ReleaseChannel::Production).unavailability(),
-        None
+        Some(UpdateUnavailability::SigningKeyMissing)
     );
 }
 

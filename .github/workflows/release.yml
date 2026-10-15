@@ -71,9 +71,9 @@ jobs:
       - name: Verify the installer artifact
         shell: pwsh
         run: |
-          # The published name is BongoCat_<version>_<arch>.exe: the packaging
+          # The published name is BongoCat-Together_<version>_<arch>.exe: the packaging
           # entry point renames the cargo-packager installer to it.
-          $expected = "BongoCat_${env:version}_x64.exe"
+          $expected = "BongoCat-Together_${env:version}_x64.exe"
           $installers = @(Get-ChildItem -Path "target/package" -Filter "*.exe" -File)
           if ($installers.Count -ne 1) {
             throw "expected exactly one installer, found $($installers.Count)"
@@ -92,7 +92,7 @@ jobs:
           # The updater installs the installer it downloads, so the update payload and
           # the published installer are the same file; this target's manifest fragment
           # and the detached signature are what make it installable.
-          $payload = "target/package/BongoCat_${env:version}_x64.exe"
+          $payload = "target/package/BongoCat-Together_${env:version}_x64.exe"
           if (-not (Test-Path $payload)) { throw "missing update payload $payload" }
           $signature = "$payload.sig"
           if (-not (Test-Path $signature)) { throw "missing signature $signature" }
@@ -127,8 +127,8 @@ jobs:
         with:
           name: release-windows-x64
           path: |
-            target/package/BongoCat_*.exe
-            target/package/BongoCat_*.exe.sig
+            target/package/BongoCat-Together_*.exe
+            target/package/BongoCat-Together_*.exe.sig
             target/package/windows-x86_64.json
           if-no-files-found: error
 

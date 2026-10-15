@@ -135,6 +135,13 @@ class UpdateReleaseIdentityTests(unittest.TestCase):
             "the packaging tool must publish manifest URLs for the same repository",
         )
 
+    def test_together_checker_matches_the_windows_installer_name(self):
+        checker = read(ROOT / "crates" / "bongocat-update" / "src" / "together.rs")
+        self.assertIn('"BongoCat-Together_{version}_x64.exe"', checker)
+        self.assertIn('"BongoCat-Together_{}_{}.exe"', read(PACKAGER))
+        self.assertEqual(runtime_constant("RELEASE_REPOSITORY_OWNER"), "heyhex")
+        self.assertEqual(runtime_constant("RELEASE_REPOSITORY_NAME"), "BongoCat-Together")
+
     def test_release_targets_match_the_dependency_policy_matrix(self):
         source = read(RELEASE)
         block = re.search(r"impl UpdateTargetTriple \{(.*?)\n\}", source, re.DOTALL)

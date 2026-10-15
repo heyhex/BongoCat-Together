@@ -150,20 +150,10 @@ pub const BUILD_ENVIRONMENT: BuildEnvironment = BuildEnvironment::Production;
 #[cfg(not(feature = "production"))]
 pub const BUILD_ENVIRONMENT: BuildEnvironment = BuildEnvironment::Development;
 
-/// Whether this build can actually check for and install updates.
-///
-/// Updates require a Production channel and a provisioned release signing key;
-/// a Development build never installs a release artifact. This is the
-/// availability fact only — the system menu additionally keeps the entry
-/// clickable in Development builds, because the update window is where the
-/// "development build" explanation lives.
+/// Whether this build offers read-only Together release notifications.
 pub fn update_check_available() -> bool {
-    bongocat_update::UpdateRuntime::for_current_build(
-        BUILD_ENVIRONMENT,
-        PRODUCT_VERSION,
-        bongocat_update::UpdateDiagnosticsTracker::default(),
-    )
-    .is_available()
+    // Read-only release checks do not require an installation signing key.
+    true
 }
 
 #[derive(Debug, thiserror::Error)]

@@ -218,7 +218,7 @@ const UPDATE_MANIFEST_NAME: &str = "latest.json";
 /// under. A release job can therefore only announce the payload it produced itself.
 const UPDATE_FRAGMENT_SUFFIX: &str = ".json";
 /// The repository that publishes releases; the manifest links its assets from here.
-const RELEASE_REPOSITORY_URL: &str = "https://github.com/ayangweb/BongoCat";
+const RELEASE_REPOSITORY_URL: &str = "https://github.com/heyhex/BongoCat-Together";
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -306,7 +306,7 @@ impl ReleaseTarget {
     fn download_asset(self) -> String {
         match self {
             Self::WindowsX86_64 => format!(
-                "{PRODUCT_NAME}_{}_{}.exe",
+                "BongoCat-Together_{}_{}.exe",
                 env!("CARGO_PKG_VERSION"),
                 self.architecture()
             ),
@@ -888,7 +888,7 @@ fn packaging_config(
     config.identifier = Some(BUNDLE_IDENTIFIER.to_owned());
     config.description =
         Some("A desktop pet that reacts to your keyboard, mouse and gamepad input.".to_owned());
-    config.homepage = Some("https://github.com/ayangweb/BongoCat".to_owned());
+    config.homepage = Some("https://github.com/heyhex/BongoCat-Together".to_owned());
     config.authors = Some(vec!["ayangweb".to_owned()]);
     // No `license_file`: cargo-packager uses it only to add an end-user EULA page
     // to the NSIS installer, which the product does not ask for. The Apache-2.0
@@ -1209,7 +1209,7 @@ fn fragment_file_name(target: ReleaseTarget) -> String {
 /// the same string rather than two shapes that have to be kept in step by hand.
 fn release_asset_url(name: &str) -> String {
     format!(
-        "{RELEASE_REPOSITORY_URL}/releases/download/v{version}/{name}",
+        "{RELEASE_REPOSITORY_URL}/releases/download/together-v{version}/{name}",
         version = env!("CARGO_PKG_VERSION"),
     )
 }
@@ -2607,7 +2607,7 @@ mod tests {
 
         assert_eq!(
             name,
-            format!("BongoCat_{}_x64.exe", env!("CARGO_PKG_VERSION"))
+            format!("BongoCat-Together_{}_x64.exe", env!("CARGO_PKG_VERSION"))
         );
         assert!(
             !name.contains("-setup"),
@@ -2705,8 +2705,13 @@ mod tests {
             // rename quietly move a published asset to a name the release notes and
             // the workflow no longer produce.
             let separator = if target.is_apple() { "-" } else { "_" };
+            let name = if target.is_apple() {
+                PRODUCT_NAME
+            } else {
+                "BongoCat-Together"
+            };
             let stem = format!(
-                "{PRODUCT_NAME}{separator}{version}{separator}{}",
+                "{name}{separator}{version}{separator}{}",
                 target.architecture()
             );
             for name in [target.download_asset(), target.update_payload_name()] {
@@ -2848,7 +2853,7 @@ mod tests {
                     version: version.to_owned(),
                     entry: super::ManifestEntry {
                         url: format!(
-                            "https://github.com/ayangweb/BongoCat/releases/download/v{version}/BongoCat-{key}.{extension}"
+                            "https://github.com/heyhex/BongoCat-Together/releases/download/together-v{version}/BongoCat-{key}.{extension}"
                         ),
                         signature: format!("signature-for-{key}"),
                         format: format.to_owned(),
@@ -2922,7 +2927,7 @@ mod tests {
             serde_json::to_vec_pretty(&super::ManifestFragment {
                 version: version.to_owned(),
                 entry: super::ManifestEntry {
-                    url: format!("https://github.com/ayangweb/BongoCat/releases/download/v{version}/x.app.tar.gz"),
+                    url: format!("https://github.com/heyhex/BongoCat-Together/releases/download/together-v{version}/x.app.tar.gz"),
                     signature: "signature".to_owned(),
                     format: "app".to_owned(),
                 },
@@ -3006,8 +3011,9 @@ mod tests {
                 serde_json::to_vec_pretty(&super::ManifestFragment {
                     version: version.to_owned(),
                     entry: super::ManifestEntry {
-                        url: "https://github.com/ayangweb/BongoCat/releases/download/v0.0.1/x"
-                            .to_owned(),
+                        url:
+                            "https://github.com/heyhex/BongoCat-Together/releases/download/v0.0.1/x"
+                                .to_owned(),
                         signature: "signature".to_owned(),
                         format: "app".to_owned(),
                     },

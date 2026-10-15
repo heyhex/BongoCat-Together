@@ -9,4 +9,6 @@
 
 ## Together：Windows 双人联机（ADR-0090）
 
-- [ ] **TOGETHER-WINDOWS**：Iroh 加密双人房间、GPUI 联机页、授权键鼠/独立文字、好友原生 overlay、模型 ID 与显示提示已实现，完整阶段证据见 `docs/bongocat-together-plan.md`。联机页已改用标准设置分组与整行长字段，中英文小窗口的边界、换行和页面滚动已有 GPUI 布局回归；DPI/跨屏目视验收仍未完成。依赖原输入可靠性、Cubism 和 Windows 发布门禁；退出条件包括 `just check`、原生 Together/单机 smoke、不同公网双机直连及中继、真实键鼠/前台白名单/锁屏/睡眠/UAC、中文输入法、DPI 与跨屏、性能测量、8 小时 soak 和安装升级卸载验收。未取得外部证据前不勾选整体完成，不发布受限安装包。
+- [x] **TOGETHER-UPDATES（ADR-0091）**：独立公开仓库的预发布版检查与下载页入口，复用现有定时检查设置；版本/来源/错误/禁止安装回归、匿名网络检查、`just check`（1209 passed，6 ignored）、Windows Together 与设置窗口 smoke 已通过。仅提供检查和手动下载，不自动安装；随 0.1.1 打包交付，证据见 `docs/bongocat-together-plan.md`。
+
+- [ ] **TOGETHER-WINDOWS**：Iroh 加密双人房间、GPUI 联机页、授权键鼠/独立文字、好友原生 overlay、模型 ID 与显示提示已实现，完整阶段证据见 `docs/bongocat-together-plan.md`。联机页已改用标准设置分组与整行长字段，中英文小窗口的边界、换行和页面滚动已有 GPUI 布局回归；昵称输入框宽度塌缩已修复，并补充真实点击、编辑与重绘保留的交互回归。DPI/跨屏目视验收仍未完成。依赖原输入可靠性、Cubism 和 Windows 发布门禁；退出条件包括 `just check`、原生 Together/单机 smoke、不同公网双机直连及中继、真实键鼠/前台白名单/锁屏/睡眠/UAC、中文输入法、DPI 与跨屏、性能测量、8 小时 soak 和安装升级卸载验收。未取得外部证据前不勾选整体完成，不发布受限安装包。
